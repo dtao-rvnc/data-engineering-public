@@ -62,7 +62,6 @@ def init_config_options():
             min_value=1,
             max_value=10,
         )
-    st.sidebar.expander("Session State").write(st.session_state)
 
 def query_cortex_search_service(query, columns=None, filter=None):
     query_defined = query.replace("'", "''")
