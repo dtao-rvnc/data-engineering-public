@@ -161,12 +161,6 @@ def create_prompt(user_question):
             - Provide a clear, well-structured answer using concise bullet points, organized logically with simple, easy-to-scan language and no unnecessary details.
             - Avoid hedging phrases like “according to the provided context.”
 
-        4. Figure References
-            - From the provided answer, identify only the figures directly relevant to the question or conclusion (e.g., Fig1, Figure2). 
-            - Do not include figures that are unrelated, redundant, or only mentioned in passing. If the context does not explicitly link a figure to the question or conclusion, do not list it.
-            - List all relevant figures at the end of the answer, formatted in parentheses like (Fig1, Fig2).
-            - If there are no relevant figures, leave the field completely blank. Do not write anything like 'Figures: None'.
-
         <chat_history>
         {chat_history}
         </chat_history>
@@ -207,23 +201,7 @@ def main():
             prompt, results = create_prompt(question.replace("'", "''"))
             with st.spinner("Thinking..."):
                 generated_response = complete(st.session_state.model_name, prompt)
-                figure_urls, nums = [[]] * 2
-
-                if re.search(r"\((Fig|Ima?g|Pic)", generated_response, re.I):
-                    figure_parentheses = re.findall(r"\((Fig[^)]+|Ima?g[^)]+|Pic[^)]+)\)", generated_response, re.I)
-                    for p in figure_parentheses:
-                        nums.extend(re.findall(r"(\d+)", p))
-                    figure_codes = "|".join(set(nums))
-                    figure_query = f'''
-                        SELECT FIGURE_URL FROM FIGURE_REFERENCES
-                        WHERE REGEXP_LIKE(FIGURE_CODE, '(.*;|^)({figure_codes})(;.*|$)');
-                    '''
-                    figure_results = session.sql(figure_query).collect()
-                    figure_urls = [row['FIGURE_URL'] for row in figure_results]
-
                 message_placeholder.markdown(generated_response)
-                if figure_urls:
-                    st.image(figure_urls, width=200)
 
         st.session_state.messages.append({
             "role": "assistant",
