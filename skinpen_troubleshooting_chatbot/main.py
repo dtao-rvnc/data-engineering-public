@@ -53,11 +53,11 @@ def init_config_options():
             value=3,
             key="num_retrieved_chunks",
             min_value=1,
-            max_value=5,
+            max_value=10,
         )
         st.number_input(
             "Select number of messages to use in chat history",
-            value=5,
+            value=3,
             key="num_chat_messages",
             min_value=1,
             max_value=10,
