@@ -5,8 +5,8 @@ from snowflake.snowpark import Session
 
 MODELS = [
     "mistral-large2",
-    "llama3.1-70b",
     "llama3.1-8b",
+    "llama3.1-70b",
 ]
 
 def init_messages():
@@ -50,10 +50,10 @@ def init_config_options():
         st.selectbox("Select model:", MODELS, key="model_name")
         st.number_input(
             "Select number of context chunks",
-            value=5,
+            value=3,
             key="num_retrieved_chunks",
             min_value=1,
-            max_value=10,
+            max_value=5,
         )
         st.number_input(
             "Select number of messages to use in chat history",
@@ -146,9 +146,8 @@ def create_prompt(user_question):
         chat_history = ""
 
     prompt = f"""
-        [INST]
-        You are a helpful AI chat assistant with RAG capabilities. When a user asks a question, you will also be provided with context between <context>...</context> and the user's chat history between <chat_history>...</chat_history>. 
-
+        You are a helpful AI chat assistant with RAG capabilities. When a user asks a question, you will also be provided with context between <context>...</context> and the user's chat history between <chat_history>...</chat_history>.
+        
         1. Adverse Events, Medical Issues, or Product Complaints (HIGHEST PRIORITY)
             - If at any time a user reports an adverse event, medical issue, or product complaint, immediately respond:
                 "Please submit this report through our Digital Safety Form at https://safety.revance.com/"
@@ -163,35 +162,33 @@ def create_prompt(user_question):
             - Avoid hedging phrases like "according to the provided context."
         
         4. Resolution Follow-Up (for troubleshooting and error-related questions only)
-            - After every troubleshooting answer, end with: "Did this resolve your issue?"
-            - Wait for the user's response before proceeding.
+            - After every troubleshooting answer, end with:
+                "Did this resolve your issue?"
             - If the user says no or the issue is not resolved, provide the next troubleshooting step based on the context. If no further steps are available, respond with:
                 "Please submit a report through our Digital Safety Form at https://safety.revance.com/ for further assistance."
-            - If the user confirms the issue is resolved, respond with:
-                "Is there anything else I can assist you with today?"
-            - If the user has no further questions, respond with:
-                "Thank you. If you need additional assistance, please contact Support at 877-373-8669, Option 1, or via chatbot, Monday to Friday, 5:00 AM to 5:00 PM PT. Goodbye."
+            - If the user confirms the issue is resolved or says thank you, respond with:
+                "You're welcome! If you need additional assistance, please contact Support at 877-373-8669, Option 1, or via chatbot, Monday to Friday, 5:00 AM to 5:00 PM PT."
         
         5. Warranty or Replacement Requests
             - If the user asks about automatic warranty or replacement, provide relevant troubleshooting steps from the context first.
             - Include at the end of your answer:
                 "If you need a replacement or warranty claim, please submit your request through our Digital Safety Form at https://safety.revance.com/"
         
-        6. Out-of-Scope or Unsupported Questions
+        6. Response Override
+            - If the source context contains phrases like "contact customer service for additional support," replace with:
+                "If the issue continues, please submit a request through our Digital Safety Form at https://safety.revance.com/ or contact Support at 877-373-8669, Option 1, Monday to Friday, 5:00 AM to 5:00 PM PT."
+        
+        7. Out-of-Scope or Unsupported Questions
             - If the question cannot be answered using the provided context or chat history, respond:
                 "I don't know the answer to that question."
-
+        
         <chat_history>
         {chat_history}
         </chat_history>
         <context>
         {prompt_context}
         </context>
-        <question>
-        {user_question}
-        </question>
-        [/INST]
-        Answer:
+        Question: {user_question}
     """
     return prompt, results
 
