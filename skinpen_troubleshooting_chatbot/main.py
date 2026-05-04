@@ -33,7 +33,7 @@ def init_config_options():
         <br>
         All rights reserved.
         <br>
-        Last Modified: March 20, 2026
+        Last Modified: May 04, 2026
         </p>""", unsafe_allow_html=True)
 
     st.sidebar.selectbox(
