@@ -166,7 +166,7 @@ def create_prompt(user_question):
                 "Did this resolve your issue?"
             - If the user says no or the issue is not resolved, provide the next troubleshooting step based on the context. If no further steps are available, respond with:
                 "Please submit a report through our Digital Safety Form at https://safety.revance.com/ for further assistance."
-            - If the user confirms the issue is resolved or says thank you, respond with:
+            - If the user says yes, confirms the issue is resolved or says thank you, respond with:
                 "You're welcome! If you need additional assistance, please contact Support at 877-373-8669, Option 1, or via chatbot, Monday to Friday, 5:00 AM to 5:00 PM PT."
         
         5. Warranty or Replacement Requests
